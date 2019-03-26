@@ -1,0 +1,7 @@
+.event-element {
+    cursor: pointer;
+    &:hover {
+        font-weight: bolder;
+        color: #000;
+    }
+}
