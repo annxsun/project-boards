@@ -47,103 +47,119 @@
 
 
 <script>
-  export default {
-    props: {
-        title: {
-            type: String,
-            default: '添加任务',
-        },
-        dialogVisible: {
-            type: Boolean,
-            default: false,
-        },
-        id: {
-            type: String,
-            default: '',
-        },
-        task: {
-          type: Object,
-        }
-    },
-    data() {
-        return {
-            formName: 'taskItemAddForm',
-            form: {
-                id: '',
-                title: '',
-                dateStart: '',
-                dateEnd: '',
-                type: '',
-                assign: [],
-                desc: ''
-            },
-            rules: {
-                title: [
-                    { required: true, message: '请输入活动名称', trigger: 'blur' },
-                    { min: 1, max: 30, message: '长度在 3 到 5 个字符', trigger: 'blur' }
-                ],
-                dateStart: [
-                    { type: 'date', required: true, message: '请选择起始日期', trigger: 'change' }
-                ],
-                dateEnd: [
-                    { type: 'date', required: true, message: '请选择结束日期', trigger: 'change' }
-                ],
-                type: [
-                    { required: true, message: '请选择任务标签', trigger: 'change' }
-                ],
-                assign: [
-                    { type: 'array', required: true, message: '请至少选择一个任务分配人', trigger: 'change' }
-                ],
-            }
-        }
-    },
-    watch: {
+import taskService from '../../service/api/task.service'
+
+export default {
+  props: {
+      title: {
+          type: String,
+          default: '添加任务',
+      },
+      dialogVisible: {
+          type: Boolean,
+          default: false,
+      },
+      id: {
+          type: String,
+          default: '',
+      },
       task: {
-          immediate: true, 
-          handler (val) {
-            this.form = {
-                id: '',
-                title: '',
-                dateStart: '',
-                dateEnd: '',
-                type: '',
-                assign: [],
-                desc: ''
-            }
-            if(this.id !== '') {
-                this.form = {...val};
-            }
+        type: Object,
+      }
+  },
+  data() {
+      return {
+          formName: 'taskItemAddForm',
+          form: {
+              id: '',
+              title: '',
+              dateStart: '',
+              dateEnd: '',
+              type: '',
+              assign: [],
+              desc: ''
+          },
+          rules: {
+              title: [
+                  { required: true, message: '请输入活动名称', trigger: 'blur' },
+                  { min: 1, max: 30, message: '长度在 3 到 5 个字符', trigger: 'blur' }
+              ],
+              dateStart: [
+                  { required: true, message: '请选择起始日期', trigger: 'change' }
+              ],
+              dateEnd: [
+                  {  required: true, message: '请选择结束日期', trigger: 'change' }
+              ],
+              type: [
+                  { required: true, message: '请选择任务标签', trigger: 'change' }
+              ],
+              assign: [
+                  { type: 'array', required: true, message: '请至少选择一个任务分配人', trigger: 'change' }
+              ],
           }
       }
+  },
+  watch: {
+    task: {
+        immediate: true, 
+        handler (val) {
+          this.form = {
+              id: '',
+              title: '',
+              dateStart: '',
+              dateEnd: '',
+              type: '',
+              assign: [],
+              desc: ''
+          }
+          this.resetForm();
+          if(this.id !== '') {
+              this.form = {...val};
+          }
+        }
+    }
+  },
+  methods: {
+    resetForm() {
+      this.$refs[this.formName].resetFields();
     },
-    methods: {
-      resetForm() {
-        this.$refs[this.formName].resetFields();
-      },
-      handleClose(done) {
-        this.$confirm('确认关闭？')
-          .then(_ => {
-           this.$emit('close');
-           this.resetForm();
-          })
-          .catch(_ => {});
-      },
-      cancel() {
+    handleClose(done) {
+      this.$confirm('确认关闭？')
+        .then(_ => {
           this.$emit('close');
           this.resetForm();
-      },
-      sure() {
-          this.$refs[this.formName].validate((valid) => {
-            if (valid) {
-              // TODO
-              this.$emit('close');
-              this.resetForm();
-            }
-          });
-          
-      }
+        })
+        .catch(_ => {});
+    },
+    cancel() {
+        this.$emit('close');
+        this.resetForm();
+    },
+    sure() {
+        this.$refs[this.formName].validate((valid) => {
+          if (!valid) return;
+          let obj = {
+              taskListId: this.id,
+              task: this.form
+          };
+          console.log('this.form.id', this.form.id)
+          if (!this.form.id) {
+            taskService.taskItemAdd(obj).then(res =>{
+                this.$emit('close', {refresh: true});
+                this.resetForm();
+            });
+          }
+          if (this.form.id) {
+             taskService.taskItemUpdate(obj).then(res =>{
+                this.$emit('close', {refresh: true});
+                this.resetForm();
+            });
+          }
+        });
+        
     }
-  };
+  }
+};
 </script>
 
 <style lang="scss" scoped>

@@ -8,7 +8,6 @@ import './directives'
 import './pipe'
 import './assets/style/index.scss'
 
-
 Vue.use(ElementUI)
 Vue.config.productionTip = false
 

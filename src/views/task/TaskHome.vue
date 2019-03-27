@@ -55,6 +55,7 @@ import TaskItem from './TaskItem'
 import TaskListAdd from './TaskListAdd'
 import TaskItemAdd from './TaskItemAdd'
 import TaskItemMoveAll from './TaskItemMoveAll'     
+import taskService from '../../service/api/task.service'
 
 export default {
     name: 'TaskHome',
@@ -79,104 +80,65 @@ export default {
             timaDialogVisible: false,
             timaTaskListId: '',
             timaTaskListNameArray: [],
-            lists:[
-                {
-                    "id": "Sk2HaTagb",
-                    "name": "待办",
-                    "count": 2,
-                    "tasks": [{
-                        "id": "SD9CJISb",
-                        "taskIndex": '#20',
-                        "title": "流水线添加质量报告",
-                        "dateStart": new Date(),
-                        "dateEnd": new Date(),
-                        "type": 'enhancement',
-                        "creater": 'wmin5',
-                        "assign": [{
-                            'id': '#JKSDK0A',
-                            'name': 'xsun28',
-                            'avatar': ''
-                        }],
-                    },{
-                        "id": "OPDFG78M",
-                        "taskIndex": '#22',
-                        "title": "组件共有化权限开发bug修复",
-                        "dateStart": new Date(),
-                        "dateEnd": new Date(),
-                        "type": 'bug',
-                        "creater": 'wmin5',
-                        "assign": [{
-                            'id': '#JKsqa0A',
-                            'name': 'xwei24',
-                            'avatar': ''
-                        }]
-                    }]
-                },
-                {
-                    "id": "HK2GaTagb",
-                    "name": "进行中",
-                    "count": 1,
-                    "tasks": [{
-                        "id": "GSN6kmGS",
-                        "taskIndex": '#25',
-                        "title": "dashboard 添加燃尽图",
-                        "dateStart": new Date(),
-                        "dateEnd": new Date(),
-                        "type": 'good first issue',
-                        "creater": 'wmin5',
-                        "assign": [{
-                            'id': '#JLJJGa0A',
-                            'name': 'xsun28',
-                            'avatar': ''
-                        }]
-                    }]
-                }
-            ]
+            lists:[]
         }
     },
+    mounted() {
+        this.initTaskList();
+    },
     methods: {
+        initTaskList() {
+            taskService.taskList().then(res => {
+                this.lists = res.data;
+                console.log(res);
+            }).catch(error=>{
+                console.log(error);
+            });
+        },
+        initTimaTaskListNameArray(id) {
+            this.timaTaskListNameArray = [];
+            this.lists.forEach(res=> {
+                if(res.id !== id) {
+                     this.timaTaskListNameArray.push({
+                         id: res.id,
+                         name: res.name,
+                     });
+                }
+            })
+        },
         dropResult($event, list) {
+            let fromId = '';
+            let toId = '';
+            let taskId = undefined;
             if($event.dragInfo.drapTag === 'task-list') {
-                let fromId = $event.dragInfo.data.taskList.id;
-                let toId = list.id;
-                let fromIndex = this.lists.findIndex(res=> { return res.id == fromId });
-                let toIndex = this.lists.findIndex(res=> { return res.id == toId });
-                let temp = {...this.lists[fromIndex]};
-                this.lists[fromIndex] = this.lists[toIndex];
-                this.lists[toIndex] = temp;
-                this.$forceUpdate();
-                return;
+                fromId = $event.dragInfo.data.taskList.id;
+                toId = list.id;
             }
-            let taskListId = $event.dragInfo.data.taskListId;
-            let taskId =  $event.dragInfo.data.task.id;
-            let taskListIndex = this.lists.findIndex(res=> { return res.id == taskListId });
-            let taskIndex = this.lists[taskListIndex].tasks.findIndex(res=> { return res.id == taskId });
-            this.lists[taskListIndex].tasks.splice(taskIndex, 1);
-            list.tasks.push($event.dragInfo.data.task);
-            this.$forceUpdate();
+            else {
+                fromId = $event.dragInfo.data.taskListId;
+                taskId =  $event.dragInfo.data.task.id;
+                toId = list.id;
+            }
+            taskService.taskItemMv({"fromId": fromId, "toId": toId, "id": taskId}).then(res=> {
+                this.initTaskList();
+                this.$forceUpdate();
+            });
         },
         addTaskList() {
             this.tlsTitle = '创建任务列表';
             this.tlsTaskListId = '';
             this.tlsTaskListName = '';
             this.tlsDialogVisible = '';
-            this.lists.push(
-                {
-                    "id": "HHsKH90A",
-                    "name": "已完成",
-                    "tasks": [],
-                }
-            )
         },
         handleAddTaskItem(id) {
             this.tisTitle = '创建任务';
-            this.tisId = '';
+            this.tisId = id;
             this.tisTask = {};
             this.tisDialogVisible = true;
         },
         handleMvAll(id, name) {
+            this.initTimaTaskListNameArray(id);
             this.timaTaskListId = id;
-            this.timaTaskListNameArray = (name==='进行中'? ['待办']: ['进行中']);
             this.timaDialogVisible = true;
         },
         handleEditTaskList(id, name) {
@@ -194,9 +156,12 @@ export default {
                 center: true
             })
             .then(() => {
-                this.$message({
-                    type: 'success',
-                    message: '删除成功!'
+                taskService.taskListDelete({id: id}).then(res=> {
+                    this.initTaskList();
+                    this.$message({
+                        type: 'success',
+                        message: '删除成功!'
+                    });
                 });
             })
             .catch(() => {
@@ -220,9 +185,12 @@ export default {
                 center: true
             })
             .then(() => {
-                this.$message({
-                    type: 'success',
-                    message: '删除成功!'
+                taskService.taskItemDelete({'taskListId': listId, 'taskId': taskId}).then(res=> {
+                    this.initTaskList();
+                    this.$message({
+                        type: 'success',
+                        message: '删除成功!'
+                    });
                 });
             })
             .catch(() => {
@@ -232,18 +200,27 @@ export default {
                 });
             });
         },
-        closeTaskListAdd() {
+        closeTaskListAdd(event) {
+            if(event && event.refresh) {
+                this.initTaskList();
+            }
             this.tlsDialogVisible = false;
             this.tlsTitle = '';
             this.tlsTaskListId = '';
             this.tlsTaskListName = '';
         },
-        closeTaskItemAdd() {
+        closeTaskItemAdd(event) {
+            if(event && event.refresh) {
+                this.initTaskList();
+            }
             this.tisDialogVisible = false;
             this.tisTitle = '';
             this.tisId = '';
         },
-        closeTaskItemMoveAll() {
+        closeTaskItemMoveAll(event) {
+            if(event && event.refresh) {
+                this.initTaskList();
+            }
             this.timaDialogVisible = false;
             this.timaTaskListId = '';
             this.timaTaskListName = '';
