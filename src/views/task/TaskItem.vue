@@ -29,7 +29,7 @@
                     </el-dropdown-menu>
                 </el-dropdown>
             </div>
-            <div class="issue-info" v-if="task.taskIndex !=='' && task.assign && task.assign.length !== '0'">
+            <div class="issue-info" v-if="task.taskIndex !==''">
                 {{task.taskIndex}} opened by {{task.creater}}
             </div>
             <div class="issue-assign">

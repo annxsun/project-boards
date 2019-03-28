@@ -1,11 +1,17 @@
 import axios from 'axios';
+import Router from 'vue-router';
 
 /** 
  * 跳转登录页
  * 携带当前页面路由，以期在登录页面完成登录后返回当前页面
  */
 const toLogin = () => {
-    // TODO
+    router.replace({
+        path: '/login',
+        query: {
+            redirect:  router.currentRoute.fullPath
+        }
+    })
 }
 
 /** 
@@ -38,7 +44,9 @@ instance.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlenco
  */ 
 instance.interceptors.request.use(    
     config => {        
-        // TODO    
+        // TODO  
+        let token = sessionStorage.getItem('token');
+        config.headers.Authorization = token;
         return config;    
     },    
     error => Promise.error(error)

@@ -113,7 +113,7 @@ export default {
               desc: ''
           }
           this.resetForm();
-          if(this.id !== '') {
+          if(val.id) {
               this.form = {...val};
           }
         }
@@ -121,7 +121,9 @@ export default {
   },
   methods: {
     resetForm() {
-      this.$refs[this.formName].resetFields();
+      if (this.$refs[this.formName]) {
+          this.$refs[this.formName].resetFields();
+      }
     },
     handleClose(done) {
       this.$confirm('确认关闭？')

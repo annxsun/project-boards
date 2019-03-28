@@ -22,5 +22,9 @@ export default {
         "taskItemUpdate": `${host.dev}/task/taskItem/update`,
         /** PUT */
         "taskItemMv": `${host.dev}/task/taskItem/fromId/{fromId}/toId/{toId}/task/{id}`,
+    },
+    "user": {
+       /** POST */
+       "login": `${host.dev}/login`,
     }
 }
