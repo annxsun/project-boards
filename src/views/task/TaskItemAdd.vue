@@ -30,8 +30,7 @@
   </el-form-item>
   <el-form-item label="任务分配" prop="assign">
     <el-select multiple  v-model="form.assign" placeholder="请选择分配人员">
-      <el-option label="xsun28" value="xsun28"></el-option>
-      <el-option label="xwei4" value="xwei4"></el-option>
+      <el-option v-for="assign in assignList" :key="assign.id" :label="assign.name" :value="assign.id"></el-option>
     </el-select>
   </el-form-item>
   <el-form-item label="任务描述">
@@ -48,6 +47,7 @@
 
 <script>
 import taskService from '../../service/api/task.service'
+import userService from '../../service/api/user.service'
 
 export default {
   props: {
@@ -70,6 +70,7 @@ export default {
   data() {
       return {
           formName: 'taskItemAddForm',
+          assignList: [],
           form: {
               id: '',
               title: '',
@@ -99,6 +100,10 @@ export default {
           }
       }
   },
+  mounted() {
+    this.getUserList();
+    
+  },
   watch: {
     task: {
         immediate: true, 
@@ -120,6 +125,14 @@ export default {
     }
   },
   methods: {
+    getUserList() {
+      userService.userList().then(res=> {
+        this.assignList = res.data.userList;
+      });
+    },
+    dealAssign() {
+      let assigns = [];
+    },
     resetForm() {
       if (this.$refs[this.formName]) {
           this.$refs[this.formName].resetFields();
@@ -144,7 +157,7 @@ export default {
               taskListId: this.id,
               task: this.form
           };
-          console.log('this.form.id', this.form.id)
+          this.dealAssign();
           if (!this.form.id) {
             taskService.taskItemAdd(obj).then(res =>{
                 this.$emit('close', {refresh: true});

@@ -9,6 +9,8 @@
   },
   "dependencies": {
     "body-parser": "^1.18.3",
+    "connect-multiparty": "^2.2.0",
+    "crypto": "^1.0.1",
     "element-ui": "^2.6.3",
     "express": "^4.16.4",
     "jsonwebtoken": "^8.5.1",

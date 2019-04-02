@@ -26,5 +26,7 @@ export default {
     "user": {
        /** POST */
        "login": `${host.dev}/login`,
+       "register": `${host.dev}/register`,
+       "userList": `${host.dev}/user/list`
     }
 }

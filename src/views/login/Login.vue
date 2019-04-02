@@ -1,16 +1,18 @@
 <template>
-    <el-form :ref="formName" :rules="rules" :model="form" label-width="80px" class="login-form">
-        <el-form-item label="用户名" prop="name">
-            <el-input v-model="form.name"></el-input>
-        </el-form-item>
-        <el-form-item label="密码" prop="pws">
-            <el-input placeholder="请输入密码" v-model="form.pws" show-password></el-input>
-        </el-form-item>
-        <el-form-item>
-            <el-button type="primary" @click="onSubmit">立即创建</el-button>
-            <el-button>取消</el-button>
-        </el-form-item>
-    </el-form>
+    <div>
+        <a class="register" @click="goRegister">注册</a>
+        <el-form :ref="formName" :rules="rules" :model="form" label-width="80px" class="login-form">
+            <el-form-item label="用户名" prop="name">
+                <el-input v-model="form.name"></el-input>
+            </el-form-item>
+            <el-form-item label="密码" prop="pws">
+                <el-input placeholder="请输入密码" v-model="form.pws" show-password></el-input>
+            </el-form-item>
+            <el-form-item>
+                <el-button type="primary" @click="onSubmit">登录</el-button>
+            </el-form-item>
+        </el-form>
+    </div>
 </template>
 
 <script>
@@ -20,6 +22,7 @@ export default {
     name: 'login',
     data() {
         return {
+            redirect: '/task',
             formName: 'loginForm',
             form: {
                 name: 'admin',
@@ -37,13 +40,21 @@ export default {
             }
         }
     },
+    mounted() {
+        let to = this.$route.query.redirect;
+        if(to) {
+            this.redirect = to;
+        }
+    },
     methods: {
+        goRegister() {
+            this.$router.push('/register');
+        },
         onSubmit(){
             this.$refs[this.formName].validate((valid) => {
                 if (valid) {
-                    userService.login(this.form).then(res=> {
-                        sessionStorage.setItem('token', res.data);
-                        this.$router.push('/task');
+                    this.$store.dispatch('user/login', this.form).then(res=> {
+                        this.$router.push(this.redirect);
                     });
                 }
             });
@@ -53,6 +64,15 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.register {
+    position: fixed;
+    top: 5px;
+    right: 20px;
+    cursor: pointer;
+    &:hover {
+        font-weight: bold;
+    }
+}
 .login-form {
     width: 400px;
     margin: auto;

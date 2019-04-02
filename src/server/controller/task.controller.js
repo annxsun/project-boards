@@ -14,11 +14,7 @@ var taskList = [{
         "dateEnd": Random.date('yyyy-MM-dd'),
         "type": "enhancement",
         "creater": "wmin5",
-        "assign": [{
-            "id": "#JKSDK0A",
-            "name": "xsun28",
-            "avatar": ""
-        }]
+        'assign': ['#JKSDK0A']
     },{
         "id": "OPDFG78M",
         "taskIndex": "#22",
@@ -27,11 +23,7 @@ var taskList = [{
         "dateEnd": Random.date('yyyy-MM-dd'),
         "type": "bug",
         "creater": "wmin5",
-        "assign": [{
-            "id": "#JKsqa0A",
-            "name": "xwei24",
-            "avatar": ""
-        }]
+        'assign': ['#JKsqa0A']
     }]
 },
 {
@@ -46,11 +38,7 @@ var taskList = [{
         "dateEnd": Random.date('yyyy-MM-dd'),
         "type": "good first issue",
         "creater": "wmin5",
-        "assign": [{
-            "id": "#JLJJGa0A",
-            "name": "xsun28",
-            "avatar": ""
-        }]
+        'assign': ['#JKSDK0A']
     }]
 }];
 
@@ -94,10 +82,10 @@ module.exports = {
         let fromIndex = taskList.findIndex(res => {
             return res.id === fromId;
         });
-        let toTask = taskList[toIndex].tasks;
-        let fromTask = taskList[fromIndex].tasks;
-        taskList[toIndex].count = toTask.count + fromTask.length;
-        taskList[toIndex].tasks = toTask.concat(fromTask);
+        let toTasks = taskList[toIndex].tasks;
+        let fromTasks = taskList[fromIndex].tasks;
+        taskList[toIndex].count = toTasks.length + fromTasks.length;
+        taskList[toIndex].tasks = toTasks.concat(fromTasks);
         taskList[fromIndex].count = 0;
         taskList[fromIndex].tasks = [];
         reponse.sendStatus(200);
@@ -137,7 +125,6 @@ module.exports = {
         let taskIndex = taskList[taskListIndex].tasks.findIndex(res => {
             return res.id === task.id;
         });
-        console.log('tas', task)
         taskList[taskListIndex].tasks[taskIndex] = task;
         reponse.sendStatus(200);
     },

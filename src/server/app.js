@@ -18,20 +18,23 @@ app.all('*', function(req, res, next) {
     else  next();
 });
 
+// // 访问静态资源
+app.use('/public', express.static(__dirname + '/public'));
+
 // token 校验
 app.use(function(req, res, next) {
     let token = req.headers.authorization;
-    if (req.url === '/login'){
+    if (req.url === '/login' || req.url === '/register' || req.url.startsWith('/public')){
       next();
       return;
     } 
     if (!token) {
-       res.sendStatus(401).send({'message': '没有权限访问'});
+       res.status(401).send({'message': '没有权限访问'});
        return;
     }
     jwt.verify(token, config.secrets, function(err, decoded) {
         if(err) {
-          res.sendStatus(401).send({'message': '没有权限访问'});
+          res.status(401).send({'message': '没有权限访问'});
           return;
         }
         req.decoded = decoded;
@@ -51,14 +54,6 @@ var task = require('./routes/task');
 app.use('', user);
 app.use('/task', task);
 
-// // 访问静态资源
-// app.use(express.static(path.resolve(__dirname, '../dist')));
-
-// // 访问单页
-// app.get('*', function (req, res) {
-//   var html = fs.readFileSync(path.resolve(__dirname, '../dist/index.html'), 'utf-8');
-//   res.send(html);
-// });
 
 // 监听
 app.listen(4000, function () {

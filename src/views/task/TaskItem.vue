@@ -43,8 +43,10 @@
                           'invalid': task.type === 'invalid', 
                           'question': task.type === 'question'}">{{task.type}}</span>
                 <div class="avatar">
-                    <img src="../../assets/unassigned.svg" />
-                    <img src="../../assets/unassigned.svg" />
+                    <div class="avatar-container" v-for="assign in task.assign" :key="assign" >
+                        <img v-if="assignMap[assign] && assignMap[assign]['avatarUrl']" :src="assignMap[assign].avatarUrl" />
+                        <img src="../../assets/unassigned.svg" v-else />
+                    </div>
                 </div>
             </div>
         </div>
@@ -52,6 +54,8 @@
 </template>
 
 <script>
+import userService from '../../service/api/user.service'
+
 export default {
     name: 'TaskItem',
     props: {
@@ -71,7 +75,27 @@ export default {
            }
         },
     },
+    data() {
+        return {
+            assignMap: {},
+        }
+    },
+    mounted() {
+        this.initAssignList()
+    },
     methods: {
+        initAssignList() {
+            userService.userList().then(res=> {
+                let list = res.data.userList;
+                if(!list || list.length === 0) {
+                   return;
+                }
+                for(let i = 0; i < list.length; i++) {
+                    let key = list[i].id;
+                    this.$set(this.assignMap, key, list[i]);
+                }
+            });
+        },
         editTaskItem() {
             this.$emit('editTaskItem');
         },
@@ -188,10 +212,16 @@ export default {
                 }
             }
             .avatar {
-                height: 20px;
-                img {
-                    height: inherit;
+                margin-left: 10px;
+                .avatar-container{
+                    height: 20px;
+                    display: inline-flex;
+                    margin-right: 5px;
+                    img {
+                        height: inherit;
+                    }
                 }
+               
             }
         }
     }

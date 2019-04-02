@@ -1,5 +1,7 @@
 import axios from 'axios';
-import Router from 'vue-router';
+import router from '../router/router';
+import store from '../store/index';
+import { Message } from 'element-ui';
 
 /** 
  * 跳转登录页
@@ -7,9 +9,9 @@ import Router from 'vue-router';
  */
 const toLogin = () => {
     router.replace({
-        path: '/login',
+        path: '/',
         query: {
-            redirect:  router.currentRoute.fullPath
+            redirect: router.currentRoute.fullPath
         }
     })
 }
@@ -24,10 +26,17 @@ const errorHandle = (status, message) => {
             toLogin();
             break;
         case 403:
-            // TODO
+            sessionStorage.removeItem('token');
+            sessionStorage.removeItem('user');
+            store.commit('user/setToken', '');
+            store.commit('user/setUser', {});
+            toLogin();
             break;
         case 404:
-            // TODO 
+            Message({
+                type: 'error',
+                message: '你访问的资源不存在'
+            })
             break;
         default:
             console.log(message);   
@@ -35,7 +44,7 @@ const errorHandle = (status, message) => {
 }
 
 // 创建axios实例
-var instance = axios.create({timeout: 1000 * 12});
+var instance = axios.create({timeout: 3000});
 // 设置post请求头
 instance.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
 /** 
@@ -44,9 +53,8 @@ instance.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlenco
  */ 
 instance.interceptors.request.use(    
     config => {        
-        // TODO  
         let token = sessionStorage.getItem('token');
-        config.headers.Authorization = token;
+        token && (config.headers.Authorization = token);
         return config;    
     },    
     error => Promise.error(error)

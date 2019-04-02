@@ -56,6 +56,7 @@ import TaskListAdd from './TaskListAdd'
 import TaskItemAdd from './TaskItemAdd'
 import TaskItemMoveAll from './TaskItemMoveAll'     
 import taskService from '../../service/api/task.service'
+import { mapState } from 'vuex'
 
 export default {
     name: 'TaskHome',
@@ -80,9 +81,12 @@ export default {
             timaDialogVisible: false,
             timaTaskListId: '',
             timaTaskListNameArray: [],
-            lists:[]
+            lists:[],
         }
     },
+    computed: mapState({
+        userInfo: state =>  state.user.user,
+    }),
     mounted() {
         this.initTaskList();
     },
@@ -90,7 +94,6 @@ export default {
         initTaskList() {
             taskService.taskList().then(res => {
                 this.lists = res.data;
-                console.log(res);
             }).catch(error=>{
                 console.log(error);
             });
@@ -146,7 +149,6 @@ export default {
             this.tlsTaskListId = id;
             this.tlsTaskListName = name;
             this.tlsDialogVisible = true;
-            console.log('this.tlsTaskListName', this.tlsTaskListName);
         },
         handleDeleteTaskList(id, name) {
             this.$confirm(`此操作将永久删除 '${name}' 任务列表, 是否继续?`, '提示', {
@@ -224,7 +226,7 @@ export default {
             this.timaDialogVisible = false;
             this.timaTaskListId = '';
             this.timaTaskListName = '';
-        }
+        },
     }
 }
 </script>
