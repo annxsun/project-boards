@@ -1,29 +1,17 @@
-# project-boards
+### 前言
 
-## Project setup
-```
-npm install
-```
+一个 vue 的简单练习项目，简单了解了一下 vue 全家桶的使用。
+ 
 
-### Compiles and hot-reloads for development
+### 启动项目
+
 ```
+node src\server\app.js // express 做的 mock 数据
+
 npm run serve
 ```
 
-### Compiles and minifies for production
-```
-npm run build
-```
-
-### Run your tests
-```
-npm run test
-```
-
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+### 效果演示
+![任务页面]('https://github.com/hillockSun/project-boards/tree/master/readme-pic/task.gif')
+![登录页面]('https://github.com/hillockSun/project-boards/tree/master/readme-pic/login.png')
+![注册页面]('https://github.com/hillockSun/project-boards/tree/master/readme-pic/register.png')

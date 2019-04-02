@@ -113,6 +113,7 @@ module.exports = {
         let taskIndex = taskList[taskListIndex].tasks.findIndex(res =>{
             return res.id === taskId;
         });
+        taskList[taskListIndex].count = taskList[taskListIndex] - 1;
         taskList[taskListIndex].tasks.splice(taskIndex, 1);
         reponse.sendStatus(200);
     },
