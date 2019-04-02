@@ -12,6 +12,6 @@ npm run serve
 ```
 
 ### 效果演示
-![任务页面]('https://github.com/hillockSun/project-boards/tree/master/readme-pic/task.gif')
-![登录页面]('https://github.com/hillockSun/project-boards/tree/master/readme-pic/login.png')
-![注册页面]('https://github.com/hillockSun/project-boards/tree/master/readme-pic/register.png')
+<img src="https://github.com/hillockSun/project-boards/blob/master/readme-pic/task.gif" width="900" height="350"/>
+<img src="https://github.com/hillockSun/project-boards/blob/master/readme-pic/login.png" width="900" height="350"/>
+<img src="https://github.com/hillockSun/project-boards/blob/master/readme-pic/register.png" width="560" height="350"/>
